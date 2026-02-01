@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Node
+node_modules/
+dist/
+
+# Maven
+/target/
+**/target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Env
+.env
+.env.local
