@@ -6,7 +6,7 @@ Minimal skeleton for a self-hosted personal chatbot platform. This repository is
 - Java 17
 - Node.js 18+
 - Docker + Docker Compose
-- PostgreSQL (if running without Docker)
+- PostgreSQL (only required when VECTORSTORE_ENABLED=true)
 
 > Note: `backend/mvnw` is a thin wrapper that invokes your local `mvn` binary.
 
@@ -25,12 +25,12 @@ Minimal skeleton for a self-hosted personal chatbot platform. This repository is
 ```
 cd backend
 cp .env.example .env
-docker compose -f ../docker/compose.yml up -d postgres
 ./mvnw spring-boot:run
 ```
 
-If you see a `Connection to localhost:5432 refused` error, make sure Postgres is running
-locally or via Docker Compose before starting the backend.
+By default the vector store is disabled so the backend can start without Postgres. To
+enable ingestion + RAG, set `VECTORSTORE_ENABLED=true`, start Postgres locally or via
+Docker Compose, and then run the backend.
 
 ### Frontend
 ```
@@ -58,6 +58,7 @@ docker compose -f docker/compose.yml --profile frontend up --build
 ## Configuration
 Environment variables (see `.env.example` files):
 - `DB_URL`, `DB_USER`, `DB_PASS`
+- `VECTORSTORE_ENABLED`
 - `MODEL_PROVIDER=mock|ollama`
 - `OLLAMA_BASE_URL`
 - `OLLAMA_MODEL`
