@@ -35,7 +35,7 @@ public class OllamaEmbeddingService implements EmbeddingService {
     if (response == null || response.embeddings() == null || response.embeddings().isEmpty()) {
       throw new IllegalStateException("Ollama embedding response was empty.");
     }
-    List<Double> embedding = response.embeddings().getFirst();
+    List<Double> embedding = response.embeddings().get(0);
     float[] vector = new float[embedding.size()];
     for (int i = 0; i < embedding.size(); i++) {
       vector[i] = embedding.get(i).floatValue();

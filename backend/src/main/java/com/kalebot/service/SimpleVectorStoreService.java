@@ -47,8 +47,8 @@ public class SimpleVectorStoreService implements VectorStoreService {
   }
 
   private String toVectorLiteral(float[] vector) {
-    return "[" + java.util.Arrays.stream(vector)
-        .mapToObj(Float::toString)
+    return "[" + java.util.stream.IntStream.range(0, vector.length)
+        .mapToObj(index -> Float.toString(vector[index]))
         .collect(Collectors.joining(",")) + "]";
   }
 }
