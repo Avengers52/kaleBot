@@ -17,6 +17,7 @@ import com.kalebot.model.vuln.Source;
 import com.kalebot.model.vuln.Vulnerability;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -41,8 +42,10 @@ public class SimpleChatService implements ChatService {
   public Flux<ChatStreamEvent> streamChat(ChatRequest request) {
     String message = request.message();
     return maybeScan(message)
-        .defaultIfEmpty(null)
-        .flatMapMany(scanReport -> {
+        .map(Optional::of)
+        .defaultIfEmpty(Optional.empty())
+        .flatMapMany(optionalScan -> {
+          ScanReport scanReport = optionalScan.orElse(null);
           String prompt = buildPrompt(message, scanReport);
           List<Source> sources = scanReport == null ? List.of() : scanReport.sources();
           ScanSummary summary = scanReport == null
