@@ -25,8 +25,12 @@ Minimal skeleton for a self-hosted personal chatbot platform. This repository is
 ```
 cd backend
 cp .env.example .env
+docker compose -f ../docker/compose.yml up -d postgres
 ./mvnw spring-boot:run
 ```
+
+If you see a `Connection to localhost:5432 refused` error, make sure Postgres is running
+locally or via Docker Compose before starting the backend.
 
 ### Frontend
 ```
