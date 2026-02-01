@@ -2,6 +2,7 @@ export type ChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  createdAt?: number;
 };
 
 export type ChatChunk = {
@@ -20,4 +21,13 @@ export type ChatFinal = {
     dependencyCount: number;
     findingCount: number;
   } | null;
+};
+
+export type Conversation = {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  sources: Source[];
+  scanSummary?: ChatFinal['scan'] | null;
+  updatedAt: number;
 };
