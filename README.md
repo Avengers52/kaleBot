@@ -57,6 +57,10 @@ Environment variables (see `.env.example` files):
 - `MODEL_PROVIDER=mock|ollama`
 - `OLLAMA_BASE_URL`
 - `OLLAMA_MODEL`
+- `OLLAMA_EMBED_MODEL` (optional)
+- `OSV_BASE_URL`
+- `NVD_BASE_URL`
+- `NVD_API_KEY` (optional)
 - `FRONTEND_ORIGIN`
 
 ## Endpoints
@@ -64,8 +68,29 @@ Environment variables (see `.env.example` files):
 - `POST /api/chat/stream` (SSE)
 - `POST /api/ingest/url`
 - `POST /api/ingest/text`
+- `POST /api/vuln/scan`
 
 See [docs/API.md](docs/API.md) for request/response examples.
+
+### Vulnerability scan example
+```
+curl -X POST http://localhost:8080/api/vuln/scan \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "inputType": "maven_pom",
+    "content": "<project>...</project>",
+    "includeTransitives": false
+  }'
+```
+
+### Chat stream example (SSE)
+```
+curl -N -X POST http://localhost:8080/api/chat/stream \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "message": "<project>...</project>"
+  }'
+```
 
 ## Where to add real logic
 - Replace mock model streaming in `MockModelClient` with real providers or extend `OllamaModelClient`.
