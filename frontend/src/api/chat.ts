@@ -5,13 +5,15 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080
 export const streamChat = async (
   prompt: string,
   onChunk: (chunk: ChatChunk) => void,
-  onFinal?: (finalPayload: ChatFinal) => void
+  onFinal?: (finalPayload: ChatFinal) => void,
+  signal?: AbortSignal
 ): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
+    signal,
     body: JSON.stringify({ message: prompt })
   });
 

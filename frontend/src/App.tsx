@@ -1,12 +1,7 @@
-import ChatPage from './components/ChatPage';
+import AppShell from './components/shell/AppShell';
 
 const App = () => {
-  return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', margin: '2rem' }}>
-      <h1>kaleBot</h1>
-      <ChatPage />
-    </div>
-  );
+  return <AppShell />;
 };
 
 export default App;
