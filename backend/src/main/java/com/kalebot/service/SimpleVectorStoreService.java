@@ -6,10 +6,12 @@ import com.kalebot.model.SourceChunk;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(name = "vectorstore.enabled", havingValue = "true")
 public class SimpleVectorStoreService implements VectorStoreService {
   private final JdbcTemplate jdbcTemplate;
 
