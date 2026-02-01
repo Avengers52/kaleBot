@@ -445,7 +445,12 @@ body {
   }
 
   .sources-pane {
-    display: none;
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
   }
 
   .mobile-only {
@@ -461,6 +466,7 @@ body {
     transform: translateX(120%);
     transition: transform 0.2s ease;
     z-index: 30;
+    pointer-events: auto;
   }
 
   .sources-panel.open {
