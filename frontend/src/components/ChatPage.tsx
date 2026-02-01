@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { streamChat } from '../api/chat';
-import type { ChatMessage } from '../types/chat';
+import type { ChatFinal, ChatMessage, Source } from '../types/chat';
 import Composer from './Composer';
 import MessageList from './MessageList';
 import SourcesPanel from './SourcesPanel';
@@ -8,6 +8,7 @@ import SourcesPanel from './SourcesPanel';
 const ChatPage = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [sources, setSources] = useState<Source[]>([]);
 
   const handleSend = async (prompt: string) => {
     if (!prompt.trim()) {
@@ -29,6 +30,7 @@ const ChatPage = () => {
 
     setMessages((prev) => [...prev, userMessage, assistantMessage]);
     setIsStreaming(true);
+    setSources([]);
 
     try {
       await streamChat(prompt, (chunk) => {
@@ -39,6 +41,8 @@ const ChatPage = () => {
               : message
           )
         );
+      }, (finalPayload: ChatFinal) => {
+        setSources(finalPayload.sources ?? []);
       });
     } catch (error) {
       setMessages((prev) =>
@@ -59,7 +63,7 @@ const ChatPage = () => {
         <MessageList messages={messages} />
         <Composer onSend={handleSend} isStreaming={isStreaming} />
       </section>
-      <SourcesPanel />
+      <SourcesPanel sources={sources} />
     </div>
   );
 };

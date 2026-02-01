@@ -1,4 +1,10 @@
-const SourcesPanel = () => {
+import type { Source } from '../types/chat';
+
+type SourcesPanelProps = {
+  sources: Source[];
+};
+
+const SourcesPanel = ({ sources }: SourcesPanelProps) => {
   return (
     <aside
       style={{
@@ -9,7 +15,22 @@ const SourcesPanel = () => {
       }}
     >
       <h2>Sources</h2>
-      <p>Source citations will appear here when RAG is implemented.</p>
+      {sources.length === 0 ? (
+        <p>No sources available yet.</p>
+      ) : (
+        <ul style={{ paddingLeft: '1.25rem' }}>
+          {sources.map((source) => (
+            <li key={source.url}>
+              <a href={source.url} target="_blank" rel="noreferrer">
+                {source.title || source.url}
+              </a>
+              <span style={{ marginLeft: '0.5rem', color: '#666', fontSize: '0.85rem' }}>
+                ({source.kind})
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </aside>
   );
 };

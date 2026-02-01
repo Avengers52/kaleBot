@@ -1,8 +1,8 @@
 package com.kalebot.controller;
 
 import com.kalebot.core.ChatService;
-import com.kalebot.model.ChatChunk;
 import com.kalebot.model.ChatRequest;
+import com.kalebot.model.ChatStreamEvent;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +21,10 @@ public class ChatController {
   }
 
   @PostMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public Flux<ServerSentEvent<ChatChunk>> streamChat(@RequestBody ChatRequest request) {
+  public Flux<ServerSentEvent<Object>> streamChat(@RequestBody ChatRequest request) {
     return chatService.streamChat(request)
-        .map(chunk -> ServerSentEvent.builder(chunk)
-            .event("chunk")
+        .map(event -> ServerSentEvent.builder(event.data())
+            .event(event.event())
             .build());
   }
 }
