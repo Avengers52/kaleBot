@@ -1,11 +1,11 @@
 package com.kalebot.service;
 
 import com.kalebot.core.IngestionService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @Service
-@ConditionalOnMissingBean(IngestionService.class)
+@ConditionalOnProperty(name = "vectorstore.enabled", havingValue = "false", matchIfMissing = true)
 public class NoopIngestionService implements IngestionService {
   @Override
   public void ingestUrl(String url) {
