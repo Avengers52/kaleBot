@@ -1,9 +1,11 @@
 package com.kalebot.core;
 
+import com.kalebot.model.EmbeddedChunk;
+import com.kalebot.model.SourceChunk;
 import java.util.List;
 
 public interface VectorStoreService {
-  void upsert(List<String> chunks);
+  void upsert(long docId, List<EmbeddedChunk> chunks);
 
-  List<String> query(float[] queryVector, int topK);
+  List<SourceChunk> query(float[] queryVector, int topK);
 }
