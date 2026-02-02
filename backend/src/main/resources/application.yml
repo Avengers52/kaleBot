@@ -9,13 +9,13 @@ spring:
     username: ${DB_USER:kalebot}
     password: ${DB_PASS:kalebot}
   flyway:
-    enabled: ${VECTORSTORE_ENABLED:false}
+    enabled: ${VECTORSTORE_ENABLED:true}
 
 app:
   frontend-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
 
 vectorstore:
-  enabled: ${VECTORSTORE_ENABLED:false}
+  enabled: ${VECTORSTORE_ENABLED:true}
 
 model:
   provider: ${MODEL_PROVIDER:mock}
