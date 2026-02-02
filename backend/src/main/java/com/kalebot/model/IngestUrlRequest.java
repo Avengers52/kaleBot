@@ -1,4 +1,6 @@
 package com.kalebot.model;
 
-public record IngestUrlRequest(String url) {
+import jakarta.validation.constraints.NotBlank;
+
+public record IngestUrlRequest(@NotBlank(message = "url is required") String url) {
 }

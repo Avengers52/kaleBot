@@ -1,4 +1,6 @@
 package com.kalebot.model;
 
-public record ChatRequest(String message) {
+import jakarta.validation.constraints.NotBlank;
+
+public record ChatRequest(@NotBlank(message = "message is required") String message) {
 }

@@ -40,7 +40,7 @@ const SourcesPanel = ({ sources, scanSummary, isOpen, onClose }: SourcesPanelPro
         <ul className="sources-list">
           {sources.map((source) => (
             <li key={`${source.url}-${source.kind}`}>
-              <a href={source.url} target="_blank" rel="noreferrer">
+              <a href={source.url} target="_blank" rel="noreferrer noopener">
                 {source.title || source.url}
               </a>
               <span className="source-kind">{source.kind}</span>

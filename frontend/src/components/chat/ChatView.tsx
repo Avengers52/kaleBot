@@ -20,8 +20,8 @@ const ChatView = ({ conversation, isStreaming, error, onSend, onStop, onRetry }:
       {error ? (
         <div className="error-banner">
           <div>
-            <strong>Connection lost.</strong>
-            <span>We lost the stream. You can retry the last prompt.</span>
+            <strong>Request failed.</strong>
+            <span>{error}</span>
           </div>
           <button type="button" className="button secondary" onClick={onRetry}>
             Retry

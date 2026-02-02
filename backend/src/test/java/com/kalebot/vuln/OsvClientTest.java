@@ -40,7 +40,8 @@ class OsvClientTest {
   @Test
   void queriesBatchAndHydratesVulns() throws InterruptedException {
     server.enqueue(new MockResponse()
-        .setBody("{\"results\":[{\"vulns\":[{\"id\":\"OSV-1\"}]},{\"vulns\":[]}]}"));
+        .setBody("{\"results\":[{\"vulns\":[{\"id\":\"OSV-1\"}]},{\"vulns\":[]}]}")
+        .addHeader("Content-Type", "application/json"));
     server.enqueue(new MockResponse()
         .setBody("{\"id\":\"OSV-1\",\"summary\":\"Test\",\"details\":\"Details\",\"aliases\":[\"CVE-2024-0001\"],\"references\":[{\"type\":\"ADVISORY\",\"url\":\"https://example.com\"}]}")
         .addHeader("Content-Type", "application/json"));

@@ -17,10 +17,10 @@ import com.kalebot.model.vuln.Source;
 import com.kalebot.model.vuln.Vulnerability;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 public class SimpleChatService implements ChatService {
@@ -42,19 +42,12 @@ public class SimpleChatService implements ChatService {
   public Flux<ChatStreamEvent> streamChat(ChatRequest request) {
     String message = request.message();
     return maybeScan(message)
-        .map(Optional::of)
-        .defaultIfEmpty(Optional.empty())
-        .flatMapMany(optionalScan -> {
-          ScanReport scanReport = optionalScan.orElse(null);
-          String prompt = buildPrompt(message, scanReport);
-          List<Source> sources = scanReport == null ? List.of() : scanReport.sources();
-          ScanSummary summary = scanReport == null
-              ? null
-              : new ScanSummary(scanReport.dependencies().size(), scanReport.findings().size());
-          ChatFinal finalPayload = new ChatFinal(sources, summary);
-          Flux<ChatStreamEvent> deltas = modelClient.streamGenerate(prompt)
+        .flatMap(scanReport -> Mono.just(buildScanPrompt(message, scanReport)))
+        .switchIfEmpty(buildRagPrompt(message))
+        .flatMapMany(promptContext -> {
+          Flux<ChatStreamEvent> deltas = modelClient.streamGenerate(promptContext.prompt())
               .map(token -> new ChatStreamEvent("delta", new ChatDelta(token)));
-          return deltas.concatWith(Mono.just(new ChatStreamEvent("final", finalPayload)));
+          return deltas.concatWith(Mono.just(new ChatStreamEvent("final", promptContext.finalPayload())));
         });
   }
 
@@ -84,20 +77,24 @@ public class SimpleChatService implements ChatService {
         || lower.contains("api(");
   }
 
-  private String buildPrompt(String message, ScanReport scanReport) {
-    if (scanReport == null) {
-      List<SourceChunk> context = ragService.retrieveContext(message);
-      StringBuilder promptBuilder = new StringBuilder();
-      promptBuilder.append("User: ").append(message).append("\n");
-      if (!context.isEmpty()) {
-        promptBuilder.append("Context:\n");
-        for (SourceChunk chunk : context) {
-          promptBuilder.append("- ").append(chunk.content()).append("\n");
-        }
-      }
-      promptBuilder.append("Assistant:");
-      return promptBuilder.toString();
-    }
+  private Mono<PromptContext> buildRagPrompt(String message) {
+    return Mono.fromCallable(() -> ragService.retrieveContext(message))
+        .subscribeOn(Schedulers.boundedElastic())
+        .map(context -> {
+          StringBuilder promptBuilder = new StringBuilder();
+          promptBuilder.append("User: ").append(message).append("\n");
+          if (!context.isEmpty()) {
+            promptBuilder.append("Context:\n");
+            for (SourceChunk chunk : context) {
+              promptBuilder.append("- ").append(chunk.content()).append("\n");
+            }
+          }
+          promptBuilder.append("Assistant:");
+          return new PromptContext(promptBuilder.toString(), new ChatFinal(List.of(), null));
+        });
+  }
+
+  private PromptContext buildScanPrompt(String message, ScanReport scanReport) {
     StringBuilder prompt = new StringBuilder();
     prompt.append("You are Vulnerability Copilot. ")
         .append("Analyze the dependency list and vulnerability findings. ")
@@ -155,6 +152,12 @@ public class SimpleChatService implements ChatService {
       }
     }
     prompt.append("\nAssistant:");
-    return prompt.toString();
+    List<Source> sources = scanReport.sources();
+    ScanSummary summary = new ScanSummary(scanReport.dependencies().size(), scanReport.findings().size());
+    ChatFinal finalPayload = new ChatFinal(sources, summary);
+    return new PromptContext(prompt.toString(), finalPayload);
+  }
+
+  private record PromptContext(String prompt, ChatFinal finalPayload) {
   }
 }

@@ -12,6 +12,15 @@ type CodeBlockProps = {
   code: string;
 };
 
+const isSafeHref = (href: string) => {
+  try {
+    const url = new URL(href, window.location.origin);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
 const CodeBlock = ({ language, code }: CodeBlockProps) => {
   const [copied, setCopied] = React.useState(false);
 
@@ -74,11 +83,16 @@ const renderInline = (text: string) => {
     } else if (token.startsWith('[')) {
       const linkMatch = /\[([^\]]+)\]\(([^)]+)\)/.exec(token);
       if (linkMatch) {
+        const href = linkMatch[2];
+        if (!isSafeHref(href)) {
+          nodes.push(`${linkMatch[1]} (${href})`);
+        } else {
         nodes.push(
-          <a href={linkMatch[2]} target="_blank" rel="noreferrer" key={`link-${key++}`}>
+          <a href={href} target="_blank" rel="noreferrer noopener" key={`link-${key++}`}>
             {linkMatch[1]}
           </a>
         );
+        }
       } else {
         nodes.push(token);
       }

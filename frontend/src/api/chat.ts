@@ -18,7 +18,22 @@ export const streamChat = async (
   });
 
   if (!response.ok || !response.body) {
-    throw new Error(`Failed to stream chat: ${response.status}`);
+    let errorMessage = `Failed to stream chat: ${response.status}`;
+    const contentType = response.headers.get('content-type') ?? '';
+    try {
+      if (contentType.includes('application/problem+json') || contentType.includes('application/json')) {
+        const data = await response.json();
+        errorMessage = data.detail || data.message || errorMessage;
+      } else {
+        const text = await response.text();
+        if (text) {
+          errorMessage = text;
+        }
+      }
+    } catch {
+      // keep fallback message
+    }
+    throw new Error(errorMessage);
   }
 
   const reader = response.body.getReader();

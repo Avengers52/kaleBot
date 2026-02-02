@@ -4,6 +4,7 @@ import com.kalebot.core.IngestionService;
 import com.kalebot.model.IngestTextRequest;
 import com.kalebot.model.IngestUrlRequest;
 import java.util.Map;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,13 @@ public class IngestionController {
   }
 
   @PostMapping("/url")
-  public Map<String, Boolean> ingestUrl(@RequestBody IngestUrlRequest request) {
+  public Map<String, Boolean> ingestUrl(@Valid @RequestBody IngestUrlRequest request) {
     ingestionService.ingestUrl(request.url());
     return Map.of("accepted", true);
   }
 
   @PostMapping("/text")
-  public Map<String, Boolean> ingestText(@RequestBody IngestTextRequest request) {
+  public Map<String, Boolean> ingestText(@Valid @RequestBody IngestTextRequest request) {
     ingestionService.ingestText(request.sourceId(), request.text());
     return Map.of("accepted", true);
   }
